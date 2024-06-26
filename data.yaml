@@ -1,70 +1,18 @@
-# nginx-rs.yaml
-apiVersion: apps/v1
-kind: ReplicaSet
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: nginx-rs
+  name: countdown-job-ttl
 spec:
-  replicas: 3
+   
   template:
     metadata:
-      name: nginx-pod
-      labels:
-        app: nginx-app
-        tier: frontend
+      name: countdown-pod
     spec:
       containers:
-      - name: nginx-container
-        image: nginx
-        ports:
-        - containerPort: 80
-  selector:
-    matchLabels:
-      app: nginx-app
-    matchExpressions:
-      - {key: tier, operator: In, values: [frontend]}
-
-
-********************************************************
-
-
-# fluentd-ds-allnodes.yaml
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: fluentd-ds
-spec:
-  template:
-    metadata:
-      labels:
-        name: fluentd
-    spec:
-      containers:
-      - name: fluentd
-        image: gcr.io/google-containers/fluentd-elasticsearch:1.20
-  selector:
-    matchLabels:
-      name: fluentd
-
-
-========================
-
-# nginx-ds-subsetnodes.yaml
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: nginx-ds
-spec:
-  template:
-    metadata:
-      labels:
-        name: nginx
-    spec:
-      containers:
-      - name: nginx-container
-        image: nginx
-      nodeSelector:
-        disktype: ssd
-  selector:
-    matchLabels:
-      name: nginx
-
+        - name: counter
+          image: centos:7
+          command:
+            - "bin/bash"
+            - "-c"
+            - "for i in 9 8 7 6 5 4 3 2 1 ; do echo $i ; sleep 1 ; done"
+      restartPolicy: Never
