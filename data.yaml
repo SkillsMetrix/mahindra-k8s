@@ -1,21 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deploy
+  name: redis-deployment
   labels:
-    app: nginx-app
+    app: redis
+
 spec:
-  replicas: 3
+  replicas: 10
+  selector:
+    matchLabels:
+      app: redis
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
-        app: nginx-app
+        app: redis
     spec:
       containers:
-      - name: nginx-container
-        image: nginx:1.7.9
-        ports:
-        - containerPort: 80
-  selector:
-    matchLabels:
-      app: nginx-app
+        - name: redis-container
+          image: redis:5.0
