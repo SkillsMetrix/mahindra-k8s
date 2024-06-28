@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: utility-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: utility-api
+  template:
+    metadata:
+      name: utility-api-pod
+      labels:
+        app: utility-api
+    spec:
+      containers:
+        - name: utility-api
+          image: pavanelthepu/utility-api
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: 20Mi
+              cpu: "0.25"
+            limits:
+              memory: 400Mi
+              cpu: "1"
+
+
+
+  ----apiVersion: v1
+kind: Service
+metadata:
+  name: utility-api-service
+spec:
+  selector:
+    app: utility-api
+  ports:
+    - port: 8080
+      targetPort: 8080
+  -----
+
+
+
+  apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: utility-api
+spec:
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - resource:
+        name: cpu
+        target:
+          averageUtilization: 70
+          type: Utilization
+      type: Resource
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: utility-api
+
+  ----
+
+  apiVersion: v1
+kind: Pod
+metadata:
+  name: traffic-generator
+spec:
+  containers:
+  - name: alpine
+    image: alpine
+    args:
+    - sleep
+    - "100000000"
