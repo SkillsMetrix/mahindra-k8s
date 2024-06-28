@@ -3,3 +3,7 @@ echo "nameserver 8.8.8.8" |  tee /etc/resolv.conf  >  /dev/null
 
 
 https://github.com/SkillsMetrix/nice-k8s/blob/main/NetworkPolicies.zip
+
+
+
+kubectl apply -f https://raw.githubusercontent.com/pythianarora/total-practice/master/sample-kubernetes-code/metrics-server.yaml
